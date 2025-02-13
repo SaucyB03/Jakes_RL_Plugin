@@ -22,7 +22,6 @@ class Jake_Plugin: public BakkesMod::Plugin::BakkesModPlugin
 	//Boilerplate
 	void onLoad() override;
 	void onUnload() override; // Uncomment and implement if you need a unload method
-	void jakesBallsFlipping();
 	void Hook(CarWrapper car, void* params, std::string eventname);
 	void Render(CanvasWrapper canvas);
 
@@ -46,5 +45,7 @@ private:
 	shared_ptr<float> angle = make_shared<float>(0);
 	shared_ptr<float> dial_x = make_shared<float>(0);
 	shared_ptr<float> dial_y = make_shared<float>(0);
+	shared_ptr<float> pos_x = make_shared<float>(0);
+	shared_ptr<float> pos_y = make_shared<float>(0);
 	std::shared_ptr<ImageWrapper> dial_img;
 };
