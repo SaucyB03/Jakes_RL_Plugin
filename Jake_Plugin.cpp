@@ -20,9 +20,9 @@ void Jake_Plugin::onLoad()
 	screen_res_y = std::stoi(res.substr(x_pos+1));
 
 	//Define Cvars
-	cvarManager->registerCvar("jk_enable", "0", "Enable jake plugin", true, true, 0, true, 1, false).bindTo(enabled);
-	cvarManager->registerCvar("jk_scale", "350.0", "Scale of window", true, true, 250, true, screen_res_y/2, false).bindTo(scale);
-	cvarManager->registerCvar("jk_enableDial", "0", "Enable the dial", true, true, 0, true, 1, false).bindTo(enable_dial);
+	cvarManager->registerCvar("jk_enable", "1", "Enable jake plugin", true, true, 0, true, 1, true).bindTo(enabled);
+	cvarManager->registerCvar("jk_scale", "350.0", "Scale of window", true, true, 250, true, screen_res_y/2, true).bindTo(scale);
+	cvarManager->registerCvar("jk_enableDial", "1", "Enable the dial", true, true, 0, true, 1, true).bindTo(enable_dial);
 	cvarManager->registerCvar("jk_dodge", "0", "Currently Flipping", true, true, 0, true, 1, false).bindTo(dodge);
 	cvarManager->registerCvar("jk_angle", "0.0", "Flip Angle", true, true, 0, true, 360, false).bindTo(angle);
 	cvarManager->registerCvar("jk_dial_x", "0", "X component for dial line", true, true, -1, true, 1, true).bindTo(dial_x);
@@ -59,20 +59,14 @@ void Jake_Plugin::onUnload()
 
 void Jake_Plugin::Hook(CarWrapper car, void* params, std::string eventname) {
 		
-	
-	
 	if (!*enabled)
 		return;
-
 
 	if (car.IsNull())
 		return;
 
-	if (!gameWrapper->IsInFreeplay() && !gameWrapper->IsInCustomTraining()) {
-		cvarManager->getCvar("jk_enable").setValue(0);
-		cvarManager->getCvar("jk_enableDial").setValue(0);
+	if (!gameWrapper->IsInFreeplay() && !gameWrapper->IsInCustomTraining())
 		return;
-	}
 
 	ControllerInput* input = static_cast<ControllerInput*>(params);
 	if (car.IsDodging() && !*dodge) {
@@ -93,7 +87,7 @@ void Jake_Plugin::Hook(CarWrapper car, void* params, std::string eventname) {
 			}
 		}
 		else {
-			cur_angle = atan(unitVec.Y / unitVec.X) * 180 / 3.1415;
+			cur_angle = atan(unitVec.Y / unitVec.X) * 180 / CONST_PI_F;
 			if (unitVec.X < 0) {
 				cur_angle = 180 + cur_angle;
 			}
@@ -116,9 +110,12 @@ void Jake_Plugin::Hook(CarWrapper car, void* params, std::string eventname) {
 }
 
 void Jake_Plugin::Render(CanvasWrapper canvas) {
-	if (!*enabled) {
+	if (!*enabled)
 		return;
-	}
+	if (!gameWrapper->IsInFreeplay() && !gameWrapper->IsInCustomTraining())
+		return;
+	if (gameWrapper->IsPaused())
+		return;
 
 	float back_scale_y = *scale;
 	if (!*enable_dial) {
@@ -143,7 +140,8 @@ void Jake_Plugin::Render(CanvasWrapper canvas) {
 	text_color.A = 255;
 	canvas.SetColor(text_color);
 	canvas.SetPosition(Vector2F{ *pos_x + (*scale-200)/2, *pos_y });
-	canvas.DrawString("Flip Angle: " + std::format("{:.2f}", *angle), 2.0, 2.0, false);
+	auto displayAngle = std::format("{:.2f}", *angle > 180 ? *angle - 360 : *angle);
+	canvas.DrawString("Flip Angle: " + displayAngle, 2.0, 2.0, false);
 
 	if (!*enable_dial) {
 		return;
