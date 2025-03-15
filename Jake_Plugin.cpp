@@ -20,9 +20,9 @@ void Jake_Plugin::onLoad()
 	screen_res_y = std::stoi(res.substr(x_pos+1));
 
 	//Define Cvars
-	cvarManager->registerCvar("jk_enable", "1", "Enable jake plugin", true, true, 0, true, 1, false).bindTo(enabled);
-	cvarManager->registerCvar("jk_scale", "350.0", "Scale of window", true, true, 250, true, screen_res_y/2, false).bindTo(scale);
-	cvarManager->registerCvar("jk_enableDial", "1", "Enable the dial", true, true, 0, true, 1, false).bindTo(enable_dial);
+	cvarManager->registerCvar("jk_enable", "1", "Enable jake plugin", true, true, 0, true, 1, true).bindTo(enabled);
+	cvarManager->registerCvar("jk_scale", "350.0", "Scale of window", true, true, 250, true, screen_res_y/2, true).bindTo(scale);
+	cvarManager->registerCvar("jk_enableDial", "1", "Enable the dial", true, true, 0, true, 1, true).bindTo(enable_dial);
 	cvarManager->registerCvar("jk_dodge", "0", "Currently Flipping", true, true, 0, true, 1, false).bindTo(dodge);
 	cvarManager->registerCvar("jk_angle", "0.0", "Flip Angle", true, true, 0, true, 360, false).bindTo(angle);
 	cvarManager->registerCvar("jk_dial_x", "0", "X component for dial line", true, true, -1, true, 1, true).bindTo(dial_x);
