@@ -68,4 +68,84 @@ void Jake_Plugin::RenderSettings() {
 		std::string hoverText = "Y position is " + std::to_string(posY);
 		ImGui::SetTooltip(hoverText.c_str());
 	}
+
+	// Preset #1:
+	CVarWrapper presOneCvar = cvarManager->getCvar("jk_preset_one");
+	if (!presOneCvar) { return; }
+	bool presOne = presOneCvar.getBoolValue();
+
+	// Preset #2:
+	CVarWrapper presTwoCvar = cvarManager->getCvar("jk_preset_two");
+	if (!presTwoCvar) { return; }
+	bool presTwo = presTwoCvar.getBoolValue();
+
+	//Preset #1 Customizer
+	if (ImGui::Checkbox("Use Color Preset #1", &presOne)) {
+		presOneCvar.setValue(presOne);
+		if (presOne && presTwo) {
+			presTwoCvar.setValue(false);
+		}
+	}
+	if (ImGui::IsItemHovered()) {
+		ImGui::SetTooltip("Set color theme to preset #1");
+	}
+
+	CVarWrapper backColorVar1 = cvarManager->getCvar("jk_back_color_one");
+	if (!backColorVar1) { return; }
+	// converts from 0-255 color to 0.0-1.0 color
+	LinearColor backColor1 = backColorVar1.getColorValue() / 255;
+	if (ImGui::ColorEdit4("Background Color Preset #1", &backColor1.R, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar)) {
+		backColorVar1.setValue(backColor1 * 255);
+	}
+	CVarWrapper textColorVar1 = cvarManager->getCvar("jk_text_color_one");
+	if (!textColorVar1) { return; }
+	// converts from 0-255 color to 0.0-1.0 color
+	LinearColor textColor1 = textColorVar1.getColorValue() / 255;
+	if (ImGui::ColorEdit4("Text Color P1", &textColor1.R, ImGuiColorEditFlags_NoInputs)) {
+		textColorVar1.setValue(textColor1 * 255);
+	}
+	CVarWrapper armColorVar1 = cvarManager->getCvar("jk_arm_color_one");
+	if (!armColorVar1) { return; }
+	// converts from 0-255 color to 0.0-1.0 color
+	LinearColor armColor1 = armColorVar1.getColorValue() / 255;
+	if (ImGui::ColorEdit4("Dial Arm Color P1", &armColor1.R, ImGuiColorEditFlags_NoInputs)) {
+		armColorVar1.setValue(armColor1 * 255);
+	}
+
+	// Update vars for comparison
+	presOne = presOneCvar.getBoolValue();
+	presTwo = presTwoCvar.getBoolValue();
+
+	//Preset #2 Customizer
+	if (ImGui::Checkbox("Use Color Preset #2", &presTwo)) {
+		presTwoCvar.setValue(presTwo);
+		if (presOne && presTwo) {
+			presOneCvar.setValue(false);
+		}
+	}
+	if (ImGui::IsItemHovered()) {
+		ImGui::SetTooltip("Set color theme to preset #2");
+	}
+
+	CVarWrapper backColorVar2 = cvarManager->getCvar("jk_back_color_two");
+	if (!backColorVar2) { return; }
+	// converts from 0-255 color to 0.0-1.0 color
+	LinearColor backColor2 = backColorVar2.getColorValue() / 255;
+	if (ImGui::ColorEdit4("Background Color P2", &backColor2.R, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar)) {
+		backColorVar2.setValue(backColor2 * 255);
+	}
+	CVarWrapper textColorVar2 = cvarManager->getCvar("jk_text_color_two");
+	if (!textColorVar2) { return; }
+	// converts from 0-255 color to 0.0-1.0 color
+	LinearColor textColor2 = textColorVar2.getColorValue() / 255;
+	if (ImGui::ColorEdit4("Text Color P2", &textColor2.R, ImGuiColorEditFlags_NoInputs)) {
+		textColorVar2.setValue(textColor2 * 255);
+	}
+	CVarWrapper armColorVar2 = cvarManager->getCvar("jk_arm_color_two");
+	if (!armColorVar2) { return; }
+	// converts from 0-255 color to 0.0-1.0 color
+	LinearColor armColor2 = armColorVar2.getColorValue() / 255;
+	if (ImGui::ColorEdit4("Dial Arm Color P2", &armColor2.R, ImGuiColorEditFlags_NoInputs)) {
+		armColorVar2.setValue(armColor2 * 255);
+	}
 }

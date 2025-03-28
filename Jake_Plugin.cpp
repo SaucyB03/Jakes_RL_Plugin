@@ -23,12 +23,28 @@ void Jake_Plugin::onLoad()
 	cvarManager->registerCvar("jk_enable", "0", "Enable jake plugin", true, true, 0, true, 1, false).bindTo(enabled);
 	cvarManager->registerCvar("jk_scale", "350.0", "Scale of window", true, true, 250, true, screen_res_y/2, false).bindTo(scale);
 	cvarManager->registerCvar("jk_enableDial", "0", "Enable the dial", true, true, 0, true, 1, false).bindTo(enable_dial);
+	//Functionality
 	cvarManager->registerCvar("jk_dodge", "0", "Currently Flipping", true, true, 0, true, 1, false).bindTo(dodge);
 	cvarManager->registerCvar("jk_angle", "0.0", "Flip Angle", true, true, 0, true, 360, false).bindTo(angle);
+	// Position
 	cvarManager->registerCvar("jk_dial_x", "0", "X component for dial line", true, true, -1, true, 1, true).bindTo(dial_x);
 	cvarManager->registerCvar("jk_dial_y", "0", "Y component for dial line", true, true, -1, true, 1, true).bindTo(dial_y);
 	cvarManager->registerCvar("jk_pos_x", "0.0", "Position of Window", true, true, 0, true, screen_res_x, true).bindTo(pos_x);
 	cvarManager->registerCvar("jk_pos_y", "0.0", "Position of Window", true, true, 0, true, screen_res_y, true).bindTo(pos_y);
+	//Color Themes
+	cvarManager->registerCvar("jk_preset_one", "0", "Preset Enabler", true, true, 0, true, 1, false).bindTo(pres1);
+	cvarManager->registerCvar("jk_back_color_one", "#DA66667C", "color of background", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("jk_text_color_one", "#FFFFFFFF", "color of text", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("jk_arm_color_one", "#FFFFFFFF", "color of dial arm", true, false, 0, false, 0, true);
+
+	cvarManager->registerCvar("jk_preset_two", "0", "Preset Enabler", true, true, 0, true, 1, false).bindTo(pres2);
+	cvarManager->registerCvar("jk_back_color_two", "#CB66DA45", "color of background", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("jk_text_color_two", "#FFC300FF", "color of text", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("jk_arm_color_two", "#FFC300FF", "color of dial arm", true, false, 0, false, 0, true);
+
+	cvarManager->registerCvar("jk_back_color_def", "#66B8DA7C", "color of background", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("jk_text_color_def", "#00FF00FF", "color of text", true, false, 0, false, 0, true);
+	cvarManager->registerCvar("jk_arm_color_def", "#00FF00FF", "color of dial arm", true, false, 0, false, 0, true);
 
 	gameWrapper->RegisterDrawable([this](CanvasWrapper canvas) {
 		Render(canvas);
@@ -126,21 +142,27 @@ void Jake_Plugin::Render(CanvasWrapper canvas) {
 	}
 		
 	// Background tile
-	LinearColor background;
-	background.R = 102;
-	background.G = 184;
-	background.B = 218;
-	background.A = 125;
+	CVarWrapper back_col = cvarManager->getCvar("jk_back_color_def");
+	CVarWrapper text_col = cvarManager->getCvar("jk_text_color_def");
+	CVarWrapper arm_col = cvarManager->getCvar("jk_arm_color_def");
+	if (*pres1) {
+		back_col = cvarManager->getCvar("jk_back_color_one");
+		text_col = cvarManager->getCvar("jk_text_color_one");
+		arm_col = cvarManager->getCvar("jk_arm_color_one");
+	}else if(*pres2){
+		back_col = cvarManager->getCvar("jk_back_color_two");
+		text_col = cvarManager->getCvar("jk_text_color_two");
+		arm_col = cvarManager->getCvar("jk_arm_color_two");
+	}
+	
+	LinearColor background = back_col.getColorValue();
+
 	canvas.SetColor(background);
 	canvas.SetPosition(Vector2F{ *pos_x, *pos_y });
 	canvas.FillBox(Vector2F{*scale, back_scale_y});
 
 	// Render Text for flip angle
-	LinearColor text_color;
-	text_color.R = 0;
-	text_color.G = 255;
-	text_color.B = 0;
-	text_color.A = 255;
+	LinearColor text_color = text_col.getColorValue();
 	canvas.SetColor(text_color);
 	canvas.SetPosition(Vector2F{ *pos_x + (*scale-200)/2, *pos_y });
 	canvas.DrawString("Flip Angle: " + std::format("{:.2f}", *angle), 2.0, 2.0, false);
@@ -167,11 +189,8 @@ void Jake_Plugin::Render(CanvasWrapper canvas) {
 	canvas.FillBox(Vector2F{dot_width, dot_width});
 
 	//Render indicator line
-	LinearColor line_color;
-	line_color.R = 0;
-	line_color.G = 255;
-	line_color.B = 0;
-	line_color.A = 255;
+	LinearColor line_color = arm_col.getColorValue();
+
 	canvas.SetColor(line_color);
 	Vector2F dial_xy{ *pos_x + dial_center + (*dial_x * dial_scale * DIAL_RES)/2, *pos_y + dial_center + (*dial_y * -dial_scale * DIAL_RES)/2 };
 	canvas.DrawLine(Vector2F{ *pos_x + dial_center, *pos_y + dial_center }, dial_xy, 3.0);

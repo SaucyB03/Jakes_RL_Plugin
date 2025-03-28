@@ -47,5 +47,7 @@ private:
 	shared_ptr<float> dial_y = make_shared<float>(0);
 	shared_ptr<float> pos_x = make_shared<float>(0);
 	shared_ptr<float> pos_y = make_shared<float>(0);
+	shared_ptr<bool> pres1 = make_shared<bool>(false);
+	shared_ptr<bool> pres2 = make_shared<bool>(false);
 	std::shared_ptr<ImageWrapper> dial_img;
 };
